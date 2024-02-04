@@ -32,6 +32,9 @@ After analyzing the business requirements:
 More detailed information with ES, Services and Model Data in Miro - https://miro.com/app/board/uXjVNNALqIc=/
 
 **Service definition context**
+
 The “Selection of parrots for tasks” service will live separately, since it is a core subdomain, it is expected that it will be the most complex, change and be released frequently, and perhaps in the future the business will want to sell it on the market as a separate product.
+
 A service with two contexts “Creating and evaluating tasks” and “Analytics” is also included in a separate service due to the general architectural characteristics.
+
 We will also make the “Parrot Accounting” and “Manager Accounting” services separate, since they have a fin compliance nature (a separate database and strong changes in the business logic of payments are possible, for example, connecting some benefits, coupons, etc.)
