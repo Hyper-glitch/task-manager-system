@@ -23,10 +23,10 @@ After analyzing the business requirements:
 4. Instabilities are calculated and services are determined
 
 **Services:**
-     1. Selection of parrots for tasks
-     2. Creation and evaluation of tasks + Analytics
-     3. Accounting parrots
-     4. Accounting for managers
+1. Selection of parrots for tasks
+2. Creation and evaluation of tasks + Analytics
+3. Accounting parrots
+4. Accounting for managers
 
 More detailed information with ES, Services and Model Data in Miro - https://miro.com/app/board/uXjVNNALqIc=/
 
