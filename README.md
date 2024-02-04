@@ -25,9 +25,9 @@ After analyzing the business requirements:
 
 **Services:**
 1. Selection of parrots for tasks
-2. Creation and evaluation of tasks + Analytics
-3. Accounting parrots
-4. Accounting for managers
+2. Tasks execution
+3. Parrots Accounting
+4. Managers Accounting
 
 More detailed information with ES, Services and Model Data in Miro - https://miro.com/app/board/uXjVNNALqIc=/
 
