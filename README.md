@@ -29,7 +29,7 @@ After analyzing the business requirements:
 3. Parrots Accounting
 4. Managers Accounting
 
-More detailed information with ES, Services and Model Data in Miro - https://miro.com/app/board/uXjVNNALqIc=/
+###More detailed information with ES, Services and Model Data in Miro - https://miro.com/app/board/uXjVNNALqIc=/
 
 **Service definition context**
 
