@@ -39,3 +39,5 @@ The “Selection of parrots for tasks” service will live separately, since it 
 A service with two contexts “Creating and evaluating tasks” and “Analytics” is also included in a separate service due to the general architectural characteristics.
 
 We will also make the “Parrot Accounting” and “Manager Accounting” services separate, since they have a fin compliance nature (a separate database and strong changes in the business logic of payments are possible, for example, connecting some benefits, coupons, etc.)
+
+"Auth Uber Popug" service will be also separate, because it has "Scalability" architecture characteristic, if we want to increase our project it needs more auth instances.
