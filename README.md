@@ -9,14 +9,12 @@ The main goal of the new aTES system will be to increase employee productivity b
 1. Performing tasks
 2. Selection of parrots for tasks
 3. Increasing the motivation of top managers
-4. Granting rights
 
 | Subdomain view | Competitive Advantage | Difficulty | Variability | Implementation options | Interest problems | Intended type of subdomain |
 | --- | --- | --- | --- | --- | --- | --- |
 | Executing tasks | no | high | frequent | in-house development | low | generic |
 | Choose parrots for tasks | yes | high | frequent | in-house development | high | core |
 | Increasing motivation of top managers | no | low | rare | inhouse by weak teams | low | supporting |
-| Granting rights | no | low | rare | inhouse by weak teams | low | generic |
 
 After analyzing the business requirements:
 
