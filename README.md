@@ -15,6 +15,7 @@ The main goal of the new aTES system will be to increase employee productivity b
 | Executing tasks | no | high | frequent | in-house development | low | generic |
 | Choose parrots for tasks | yes | high | frequent | in-house development | high | core |
 | Increasing motivation of top managers | no | low | rare | inhouse by weak teams | low | supporting |
+| Granting rights | no | low | rare | inhouse by weak teams | low | generic |
 
 After analyzing the business requirements:
 
