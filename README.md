@@ -28,6 +28,7 @@ After analyzing the business requirements:
 2. Tasks execution
 3. Parrots Accounting
 4. Managers Accounting
+5. Auth UberPopug
 
 ### More detailed information with ES, Services and Model Data in Miro - https://miro.com/app/board/uXjVNNALqIc=/
 
