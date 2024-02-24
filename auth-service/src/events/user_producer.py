@@ -1,4 +1,4 @@
-from src.amqp.base_producer import BaseProducer
+from src.kafka.base_producer import BaseProducer
 from src.conf.amqp import AMQPConfigSettings
 from src.config import settings
 from src.enums.events import EventTypes
