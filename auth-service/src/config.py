@@ -16,13 +16,14 @@ class Settings(BaseSettings):
     error_topic: str
     reconnect_waiting: int
     max_pool_interval_ms: int
+    group_id: str
 
     class Config:
         env_file = "../.env"
 
     @property
     def bootstrap_servers(self) -> str:
-        return f"{self.host}:{self.port}"
+        return f"{self.kafka_host}:{self.kafka_port}"
 
 
 settings = Settings()
