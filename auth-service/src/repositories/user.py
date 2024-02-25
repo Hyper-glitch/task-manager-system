@@ -4,6 +4,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
+from src.dto.api.user import UserAddDTO
 from src.enums.roles import UserRoles
 from src.models.user import User
 
@@ -29,8 +30,8 @@ class UserRepository:
     def get_by_public_id(self, public_id: str):
         return self._session.query(User).filter(User.public_id == public_id).first()
 
-    def create(self, **data: Any) -> User:
-        user = User(**data)
+    def create(self, dto: UserAddDTO) -> User:
+        user = User(**dto.model_dump())
         self._session.add(user)
         self._session.commit()
         return user
