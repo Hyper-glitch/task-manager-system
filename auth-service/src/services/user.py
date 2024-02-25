@@ -1,11 +1,9 @@
 import datetime
 
 from src.config import settings
-from src.database import db
 from src.dto.api.user import UserAddDTO, UserInfoDTO
-
 from src.dto.events.user import UserRoleChangedEventDTO, UserRoleChangedDataDTO, UserDeletedEventDTO, \
-    UserCreatedEventDTO, UserEventDTO
+    UserCreatedEventDTO, UserEventDTO, UserUpdatedEventDTO
 from src.enums.roles import UserRoles
 from src.kafka.manager import KafkaManager
 from src.models.user import User
@@ -14,8 +12,8 @@ from src.services.exceptions import UserNotFound
 
 
 class UserService:
-    def __init__(self):
-        self.repository = UserRepository(session=db.session)
+    def __init__(self, repository: UserRepository):
+        self.repository = repository
         self.kafka = KafkaManager()
 
     def create_user(self, dto: UserAddDTO) -> UserInfoDTO:
@@ -32,15 +30,21 @@ class UserService:
 
         old_role = user.role
         self.repository.change_role(user=user, role=role)
-        event = UserRoleChangedEventDTO(
-            data=UserRoleChangedDataDTO(
-                public_id=user.public_id,
-                old_role=old_role,
-                new_role=role,
-            ),
-            produced_at=datetime.datetime.now(),
-        )
-        self.kafka.send(value=event.model_dump(mode="json"), topic=settings.business_event_topic)
+
+        event = UserUpdatedEventDTO(data=UserEventDTO.from_orm(user), produced_at=datetime.datetime.now())
+        self.kafka.send(value=event.model_dump(mode="json"), topic=settings.data_streaming_topic)
+
+        if role != old_role:
+            event = UserRoleChangedEventDTO(
+                data=UserRoleChangedDataDTO(
+                    public_id=user.public_id,
+                    old_role=old_role,
+                    new_role=role,
+                ),
+                produced_at=datetime.datetime.now(),
+            )
+            self.kafka.send(value=event.model_dump(mode="json"), topic=settings.business_event_topic)
+
         user_dto = UserInfoDTO.from_orm(user)
         return user_dto
 
