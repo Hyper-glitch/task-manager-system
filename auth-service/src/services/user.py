@@ -1,29 +1,35 @@
+import datetime
+
+from src.config import settings
 from src.database import db
-from src.dto.api.user import UserAddDTO
+from src.dto.api.user import UserAddDTO, UserInfoDTO
 
 from src.dto.events.user import UserRoleChangedEventDTO, UserRoleChangedDataDTO, UserDeletedEventDTO, \
-    UserDataDTO, UserCreatedEventDTO
-from src.enums.events import EventTypes
+    UserCreatedEventDTO, UserEventDTO
 from src.enums.roles import UserRoles
-from src.events.user import get_producer
+from src.kafka.manager import KafkaManager
 from src.models.user import User
 from src.repositories.user import UserRepository
+from src.services.exceptions import UserNotFound
 
 
 class UserService:
     def __init__(self):
         self.repository = UserRepository(session=db.session)
+        self.kafka = KafkaManager()
 
-    def create_user(self, data: UserAddDTO) -> User:
-        user_model = self.repository.create(**data.dict())
-        user_dto = UserDataDTO.model_validate(user_model)
-        event = UserCreatedEventDTO(data=user_dto)
-        producer = get_producer(EventTypes.DATA_STREAMING)
-        producer.send(value=event.model_dump(mode="json"))
-        return user_model
+    def create_user(self, dto: UserAddDTO) -> UserInfoDTO:
+        user = self.repository.create(dto=dto)
+        event = UserCreatedEventDTO(data=UserEventDTO.from_orm(user), produced_at=datetime.datetime.now())
+        self.kafka.send(value=event.model_dump(mode="json"), topic=settings.data_streaming_topic)
+        user_dto = UserInfoDTO.from_orm(user)
+        return user_dto
 
-    def change_user_role(self, user_id: int, role: UserRoles) -> User:
+    def change_user_role(self, user_id: int, role: UserRoles) -> UserInfoDTO:
         user = self.repository.get_by_id(user_id, lock=True)
+        if not user:
+            raise UserNotFound
+
         old_role = user.role
         self.repository.change_role(user=user, role=role)
         event = UserRoleChangedEventDTO(
@@ -31,20 +37,23 @@ class UserService:
                 public_id=user.public_id,
                 old_role=old_role,
                 new_role=role,
-            )
+            ),
+            produced_at=datetime.datetime.now(),
         )
-        producer = get_producer(EventTypes.BUSINESS_CALL)
-        producer.send(value=event.model_dump(mode="json"))
-        return user
+        self.kafka.send(value=event.model_dump(mode="json"), topic=settings.business_event_topic)
+        user_dto = UserInfoDTO.from_orm(user)
+        return user_dto
 
-    def delete_user(self, user_id: int) -> User:
-        user_obj = self.repository.get_by_id(user_id, lock=True)
-        self.repository.delete(user=user_obj)
-        user_dto = UserDataDTO.model_validate(user_obj)
-        event = UserDeletedEventDTO(data=user_dto)
-        producer = get_producer(EventTypes.DATA_STREAMING)
-        producer.send(value=event.model_dump(mode="json"))
-        return user_obj
+    def delete_user(self, user_id: int) -> UserInfoDTO:
+        user = self.repository.get_by_id(user_id, lock=True)
+        if not user:
+            raise UserNotFound
+
+        self.repository.delete(user=user)
+        event = UserDeletedEventDTO(data=UserEventDTO.from_orm(user), produced_at=datetime.datetime.now())
+        self.kafka.send(value=event.model_dump(mode="json"), topic=settings.data_streaming_topic)
+        user_dto = UserInfoDTO.from_orm(user)
+        return user_dto
 
     def get_users(self, limit: int, offset: int) -> list[User]:
         users = self.repository.get_users(limit=limit, offset=offset)
@@ -54,6 +63,10 @@ class UserService:
         count = self.repository.count()
         return count
 
-    def get_user(self, user_id: int) -> User:
+    def get_user(self, user_id: int) -> UserInfoDTO:
         user = self.repository.get_by_id(user_id)
-        return user
+        if not user:
+            raise UserNotFound
+
+        user_dto = UserInfoDTO.from_orm(user)
+        return user_dto
