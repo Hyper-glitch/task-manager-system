@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel
 
 from src.enums.roles import UserRoles
@@ -5,10 +7,13 @@ from src.enums.roles import UserRoles
 
 class UserInfoDTO(BaseModel):
     id: int
-    public_id: str
+    public_id: UUID
     username: str
     email: str
     role: UserRoles
+
+    class Config:
+        from_attributes = True
 
 
 class UserAddDTO(BaseModel):
