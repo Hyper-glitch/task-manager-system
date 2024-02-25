@@ -1,5 +1,4 @@
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import declarative_base, registry
 
-
-class Base(DeclarativeBase):
-    pass
+mapper_registry = registry()
+Base = declarative_base()
