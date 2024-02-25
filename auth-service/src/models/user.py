@@ -6,10 +6,11 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from src.database import db
 from src.enums.roles import UserRoles
+from src.models.base import Base
 
 
-class User(db.Model):
-    __table__ = "user"
+class User(Base):
+    __tablename__ = "user"
 
     username = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
@@ -24,8 +25,8 @@ class User(db.Model):
     )
 
 
-class UserRefreshToken:
-    __table__ = "user_refresh_token"
+class UserRefreshToken(Base):
+    __tablename__ = "user_refresh_token"
 
     user_id = db.Column("user_id", db.ForeignKey("user.id"), unique=True),
     refresh_token = db.Column("refresh_token", db.Text, nullable=False),
