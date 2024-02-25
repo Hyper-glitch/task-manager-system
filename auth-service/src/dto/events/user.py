@@ -38,6 +38,14 @@ class UserCreatedEventDTO(BaseModel):
     producer: UserProducer = UserProducer.AUTH_SERVICE
 
 
+class UserUpdatedEventDTO(BaseModel):
+    version: int = Field(1, title="Version")
+    produced_at: datetime = Field(None, title="Produced At")
+    title: EventTitleUser = EventTitleUser.USER_UPDATED
+    data: UserEventDTO
+    producer: UserProducer = UserProducer.AUTH_SERVICE
+
+
 class UserRoleChangedEventDTO(BaseModel):
     version: int = Field(1, title="Version")
     produced_at: datetime = Field(None, title="Produced At")
