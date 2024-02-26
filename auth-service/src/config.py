@@ -18,6 +18,15 @@ class Settings(BaseSettings):
     max_pool_interval_ms: int
     group_id: str
 
+    redis_host: str
+    redis_port: int
+    redis_db: int
+
+    auth_code_expiration: int
+    access_token_expiration: int
+    refresh_token_expiration: int
+    secret_key: str
+
     class Config:
         env_file = "../.env"
 
