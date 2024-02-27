@@ -2,7 +2,7 @@ from src.database import db
 from src.redis.manager import RedisManager
 from src.repositories.user import UserRepository
 from src.repositories.user_token import UserRefreshTokenRepo
-from src.services.oauth import OAuthService
+from src.services.oauth.oauth import OAuthService
 from src.services.user import UserService
 
 redis_manager = RedisManager()
