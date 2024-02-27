@@ -5,7 +5,7 @@ from flask_restx import Resource, reqparse
 
 from src.constants import ROLES_SCOPE_MAP
 from src.enums.grant_type import GrantType
-from src.services import oauth_service
+from src.services import oauth_service, user_service
 from src.services.exceptions import UserNotFound, AuthorizationCodeInvalid, InvalidTokenException
 from src.utils import make_response
 
@@ -29,7 +29,7 @@ class OAuth(Resource):
             )
 
         try:
-            user = oauth_service.identify_user_by_beak_shape(beak_shape=data["beak_shape"])
+            user = user_service.identify_user_by_beak_shape(beak_shape=data["beak_shape"])
         except UserNotFound:
             return Response(status=HTTPStatus.UNAUTHORIZED)
         except Exception as exc:
@@ -48,7 +48,7 @@ class OAuth(Resource):
                     response="Missing authorization code",
                 )
             try:
-                user = oauth_service.identify_user_by_auth_code(code=data["code"])
+                user = user_service.identify_user_by_auth_code(code=data["code"])
             except (AuthorizationCodeInvalid, UserNotFound):
                 return Response(status=HTTPStatus.UNAUTHORIZED)
 
@@ -59,7 +59,7 @@ class OAuth(Resource):
                     response="Missing refresh token",
                 )
             try:
-                user = oauth_service.identify_user_by_refresh_token(refresh_token=data["refresh_token"])
+                user = user_service.identify_user_by_refresh_token(refresh_token=data["refresh_token"])
             except (UserNotFound, InvalidTokenException):
                 return Response(status=HTTPStatus.UNAUTHORIZED)
 
