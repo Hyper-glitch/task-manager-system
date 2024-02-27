@@ -8,7 +8,7 @@ from src.config import settings
 from src.constants import ROLES_SCOPE_MAP
 from src.models.user import User
 from src.repositories.user_token import UserRefreshTokenRepo
-from src.structures.token import Token, TokenPair
+from src.services.oauth.token import Token, TokenPair
 
 
 class OAuthService:
