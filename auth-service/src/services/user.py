@@ -1,5 +1,9 @@
 import datetime
 
+import jwt
+from jwt import PyJWTError
+from redis import Redis
+
 from src.config import settings
 from src.dto.api.user import UserAddDTO, UserInfoDTO
 from src.dto.events.user import UserRoleChangedEventDTO, UserRoleChangedDataDTO, UserDeletedEventDTO, \
@@ -8,13 +12,14 @@ from src.enums.roles import UserRoles
 from src.kafka.manager import KafkaManager
 from src.models.user import User
 from src.repositories.user import UserRepository
-from src.services.exceptions import UserNotFound
+from src.services.exceptions import UserNotFound, AuthorizationCodeInvalid, InvalidTokenException
 
 
 class UserService:
-    def __init__(self, repository: UserRepository):
+    def __init__(self, repository: UserRepository, redis: Redis):
         self.repository = repository
         self.kafka = KafkaManager()
+        self.redis = redis
 
     def create_user(self, dto: UserAddDTO) -> UserInfoDTO:
         user = self.repository.create(dto=dto)
@@ -74,3 +79,40 @@ class UserService:
 
         user_dto = UserInfoDTO.from_orm(user)
         return user_dto
+
+    def identify_user_by_beak_shape(self, beak_shape: str) -> UserInfoDTO:
+        user = self.repository.get_by_beak_shape(beak_shape)
+        if not user:
+            raise UserNotFound
+
+        user_dto = UserInfoDTO.from_orm(user)
+        return user_dto
+
+    def identify_user_by_auth_code(self, code: str) -> User:
+        user_id = self.redis.get(f"user.auth_code.{code}")
+        if not user_id:
+            raise AuthorizationCodeInvalid("Invalid authentication code")
+
+        user = self.repository.get_by_id(user_id=int(user_id))
+        if not user:
+            raise UserNotFound(f"User with id {user_id} not found")
+
+        return user
+
+    def identify_user_by_refresh_token(self, refresh_token: str) -> User:
+        try:
+            token_payload = jwt.decode(
+                refresh_token, settings.public_key, algorithms="RS256"
+            )
+        except PyJWTError:
+            raise InvalidTokenException("Invalid token")
+
+        public_id = token_payload.get("public_id", "")
+        if not public_id:
+            raise InvalidTokenException("Invalid token data")
+
+        user = self.repository.get_by_public_id(public_id=public_id)
+        if not user:
+            raise UserNotFound(f"User with public_id {public_id} not found")
+
+        return user
