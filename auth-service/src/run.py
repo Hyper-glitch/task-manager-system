@@ -12,8 +12,8 @@ app = create_app()
 
 def add_resource():
     api = Api(app)
-    api.add_resource(User, '/user')
-    api.add_resource(OAuth, '/authorize')
+    api.add_resource(User, 'api/v1/user')
+    api.add_resource(OAuth, 'api/v1/authorize')
 
 
 @app.before_request
