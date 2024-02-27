@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     access_token_expiration: int
     refresh_token_expiration: int
     secret_key: str
+    public_key: str
 
     class Config:
         env_file = "../.env"
