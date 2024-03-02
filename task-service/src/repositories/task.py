@@ -5,6 +5,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from src.dto.api.task import TaskDTO
+from src.enums.status import TaskStatus
 from src.models.task import Task
 from src.models.user import User
 
@@ -31,4 +32,8 @@ class TaskRepository:
 
     def assign_to_user(self, user_id: int, task: Task) -> None:
         task.assignee_id = user_id
+        self._session.commit()
+
+    def status_done(self, task: Task) -> None:
+        task.status = TaskStatus.DONE
         self._session.commit()
