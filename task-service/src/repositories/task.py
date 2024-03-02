@@ -4,6 +4,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
+from src.dto.api.task import TaskDTO
 from src.models.task import Task
 from src.models.user import User
 
@@ -15,12 +16,19 @@ class TaskRepository:
     ):
         self._session = session
 
-    def get_by_public_id(
-            self, public_id: str, lock: bool = False, **lock_params: Any
+    def get_by_id(
+            self, task_id: int, lock: bool = False, **lock_params: Any
     ):
-        query = self._session.query(Task, User)
-
+        query = self._session.query(Task).outerjoin(User)
         if lock:
             query = query.with_for_update(**lock_params)
+        return query.filter(Task.id == task_id).first()
 
-        return query.filter(Task.public_id == public_id).first()
+    def create_task(self, dto: TaskDTO) -> Task:
+        task = Task(**dto.model_dump())
+        self._session.add(task)
+        return task
+
+    def assign_to_user(self, user_id: int, task: Task) -> None:
+        task.assignee_id = user_id
+        self._session.commit()
