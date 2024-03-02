@@ -1,4 +1,5 @@
 import datetime
+from typing import Any
 
 import jwt
 from jwt import PyJWTError
@@ -21,7 +22,8 @@ class UserService:
         self.kafka = KafkaManager()
         self.redis = redis
 
-    def create_user(self, dto: UserAddDTO) -> UserInfoDTO:
+    def create_user(self, data: dict[str, Any]) -> UserInfoDTO:
+        dto = UserAddDTO.model_validate(data)
         user = self.repository.create(dto=dto)
         event = UserCreatedEventDTO(data=UserEventDTO.from_orm(user), produced_at=datetime.datetime.now())
         self.kafka.send(value=event.model_dump(mode="json"), topic=settings.data_streaming_topic)
