@@ -29,8 +29,7 @@ class User(Resource):
     def post(self) -> Response:
         data = User.parser.parse_args()
         try:
-            dto = UserAddDTO.model_validate(data)
-            user_dto = user_service.create_user(dto=dto)
+            user_dto = user_service.create_user(data=data)
         except UserAlreadyExists:
             return Response(status=HTTPStatus.CONFLICT, response="User already exists")
         except Exception as exc:
