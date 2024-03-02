@@ -39,9 +39,24 @@ class TaskNewAssigneeDTO(BaseModel):
     new_assignee_public_id: str = Field(..., title="New Assignee Public Id")
 
 
-class TaskAssignedEventSchema(BaseModel):
+class TaskAssignedEventDTO(BaseModel):
     version: int = Field(1, title="Version")
     produced_at: datetime = Field(None, title="Produced At")
     title: EventTitleTaskCreated = EventTitleTaskCreated.ASSIGNED
     data: TaskNewAssigneeDTO
+    producer: TaskProducer = TaskProducer.TASK_SERVICE
+
+
+class TaskStatusChangedDataDTO(BaseModel):
+    public_id: str = Field(..., title="Public Id")
+    assignee_public_id: str = Field(..., title="Assignee Public Id")
+    old_status: TaskStatus
+    new_status: TaskStatus
+
+
+class TaskCompletedEventDTO(BaseModel):
+    version: int = Field(1, title="Version")
+    produced_at: datetime = Field(None, title="Produced At")
+    title: EventTitleTaskCreated = EventTitleTaskCreated.COMPLETED
+    data: TaskStatusChangedDataDTO
     producer: TaskProducer = TaskProducer.TASK_SERVICE
