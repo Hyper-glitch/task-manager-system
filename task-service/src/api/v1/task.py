@@ -27,3 +27,16 @@ class Task(Resource):
         except TaskNotFound:
             return Response(status=HTTPStatus.NOT_FOUND, response="Task not found")
         return make_response(code=200, **task_dto.model_dump())
+
+
+class TaskComplete(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('task_id', type=str)
+
+    def post(self) -> Response:
+        data = Task.parser.parse_args()
+        try:
+            task_dto = task_service.complete_task(task_id=data["task_id"])
+        except TaskNotFound:
+            return Response(status=HTTPStatus.NOT_FOUND, response="Task not found")
+        return make_response(code=200, **task_dto.model_dump())
