@@ -1,10 +1,8 @@
 from pydantic_settings import BaseSettings
 
-from src.enums.producer import UserProducer
-
 
 class Settings(BaseSettings):
-    project: str = UserProducer.AUTH_SERVICE.value
+    project: str = "task-service"
     api_host: str
     api_port: int
     database_dsn: str
