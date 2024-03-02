@@ -1,18 +1,10 @@
-class BaseServiceException(Exception):
+class UserNotFound(Exception):
     pass
 
 
-class UserNotFound(BaseServiceException):
+class TaskNotFound(Exception):
     pass
 
 
-class AuthorizationCodeInvalid(BaseServiceException):
-    pass
-
-
-class InvalidTokenException(BaseServiceException):
-    pass
-
-
-class UserAlreadyExists(BaseServiceException):
+class WrongTaskStatus(Exception):
     pass
