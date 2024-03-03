@@ -1,6 +1,6 @@
 from flask_restx import Api
 
-from src.api.v1.task import Task
+from src.api.v1.task import Task, TaskComplete, Reshuffle
 from src.api.v1.users import User
 from src.app import create_app
 from src.config import settings
@@ -12,7 +12,9 @@ app = create_app()
 def add_resource():
     api = Api(app)
     api.add_resource(User, 'api/v1/user')
-    api.add_resource(Task, 'api/v1/authorize')
+    api.add_resource(Task, 'api/v1/task')
+    api.add_resource(TaskComplete, 'api/v1/task/complete')
+    api.add_resource(Reshuffle, 'api/v1/task/reshuffle')
 
 
 @app.before_request
