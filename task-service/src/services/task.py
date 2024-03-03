@@ -5,11 +5,12 @@ from src.config import settings
 from src.dto.api.task import TaskDTO
 from src.dto.events.task import TaskCreatedEventDTO, TaskEventDTO, TaskNewAssigneeDTO, \
     TaskCompletedEventDTO, TaskStatusChangedDataDTO, TaskAssignedEventDTO
+from src.enums.status import TaskStatus
 from src.kafka.manager import KafkaManager
 from src.models.task import Task
 from src.repositories.task import TaskRepository
 from src.repositories.user import UserRepository
-from src.services.exceptions import TaskNotFound
+from src.services.exceptions import TaskNotFound, WrongTaskStatus
 
 
 class TaskService:
@@ -21,7 +22,7 @@ class TaskService:
     def get_task(self, task_id: int) -> TaskDTO:
         task = self.task_repo.get_by_id(task_id)
         if not task:
-            raise TaskNotFound
+            raise TaskNotFound(f"Task {task_id} not found")
 
         task_dto = TaskDTO.from_orm(task)
         return task_dto
@@ -70,3 +71,36 @@ class TaskService:
         self.kafka.send(value=business_event.model_dump(mode="json"), topic=settings.business_event_topic)
         task_dto = TaskDTO.from_orm(task)
         return task_dto
+
+    def assign_task(self, task_id: int) -> TaskDTO:
+        task = self.task_repo.get_by_id(task_id, lock=True, of=Task)
+        if not task:
+            raise TaskNotFound(f"Task {task_id} not found")
+
+        if task.status != TaskStatus.OPEN:
+            raise WrongTaskStatus(
+                f"Task {task_id} has wrong status {task.status}"
+            )
+
+        old_assignee_public_id = task.assignee.public_id
+        user, *_ = self.user_repo.get_random_employees(lock=True)
+        self.task_repo.assign_to_user(user_id=user.id, task=task)
+
+        business_event = TaskAssignedEventDTO(
+            data=TaskNewAssigneeDTO(
+                public_id=task.public_id,
+                old_assignee_public_id=old_assignee_public_id,
+                new_assignee_public_id=user.public_id,
+            ),
+            produced_at=datetime.utcnow(),
+        )
+        self.kafka.send(value=business_event.model_dump(mode="json"), topic=settings.business_event_topic)
+        return TaskDTO.from_orm(task)
+
+    def reshuffle(self) -> list[int]:
+        tasks = self.task_repo.get_all_opened()
+        task_ids = [task.id for task in tasks]
+
+        for task_id in task_ids:
+            self.assign_task(task_id=task_id)
+        return task_ids
