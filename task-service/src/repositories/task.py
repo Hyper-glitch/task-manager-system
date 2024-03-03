@@ -37,3 +37,6 @@ class TaskRepository:
     def status_done(self, task: Task) -> None:
         task.status = TaskStatus.DONE
         self._session.commit()
+
+    def get_all_opened(self):
+        return self._session.query(Task).filter(Task.status == TaskStatus.OPEN).all()
