@@ -37,6 +37,15 @@ class TaskComplete(Resource):
         data = Task.parser.parse_args()
         try:
             task_dto = task_service.complete_task(task_id=data["task_id"])
-        except TaskNotFound:
-            return Response(status=HTTPStatus.NOT_FOUND, response="Task not found")
+        except TaskNotFound as exc:
+            return Response(status=HTTPStatus.NOT_FOUND, response=str(exc))
         return make_response(code=200, **task_dto.model_dump())
+
+
+class Reshuffle(Resource):
+    def post(self) -> Response:
+        try:
+            reshuffled_ids = task_service.reshuffle()
+        except TaskNotFound as exc:
+            return Response(status=HTTPStatus.NOT_FOUND, response=str(exc))
+        return make_response(code=200, **{"ids": reshuffled_ids})
