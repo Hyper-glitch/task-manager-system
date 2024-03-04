@@ -17,7 +17,6 @@ class TaskEventDTO(BaseModel, extra=Extra.allow):
     description: str = Field(..., title="Description")
     status: TaskStatus
     assignee: UserInfoDTO
-    jira_id: int = Field(None, title="Jira Id")
 
     class Config:
         from_attributes = True

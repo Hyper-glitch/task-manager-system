@@ -17,7 +17,6 @@ class Task(Base):
     title = db.Column(db.String(128), nullable=False, default="", server_default=db.text("''"))
     short_title = db.Column(db.String(50), nullable=False, default="", server_default=db.text("''"))
     description = db.Column(db.Text, nullable=False, default="", server_default=db.text("''"))
-    jira_id = db.Column(db.Integer)
     status = db.Column(
         Enum(TaskStatus),
         nullable=False,
@@ -41,11 +40,3 @@ class Task(Base):
         onupdate=datetime.utcnow,
     )
     assignee = db.relationship("User", foreign_keys=[assignee_id])
-
-    @property
-    def long_title(self) -> str:
-        return (
-            f"[{self.jira_id}]-{self.short_title})"
-            if self.jira_id
-            else self.title
-        )
