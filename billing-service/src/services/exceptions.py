@@ -6,5 +6,5 @@ class NoActiveCycleError(Exception):
     pass
 
 
-class BillingNotFound(Exception):
+class BillingCycleNotFound(Exception):
     pass
