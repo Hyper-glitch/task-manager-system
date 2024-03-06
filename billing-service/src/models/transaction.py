@@ -35,3 +35,4 @@ class Transaction(Base):
     )
     task = db.relationship("Task", foreign_keys=[task_id])
     user = db.relationship("User", foreign_keys=[user_id])
+    billing_cycle = db.relationship("BillingCycle", foreign_keys=[billing_cycle_id])
