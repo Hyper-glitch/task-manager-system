@@ -26,5 +26,4 @@ class BillingCycle(Base):
         default=datetime.utcnow,
         server_default=db.text("(now() at time zone 'utc')"),
     )
-    processed_at = db.Column("processed_at", DateTime),
     closed_at = db.Column("closed_at", DateTime),
