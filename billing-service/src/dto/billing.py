@@ -10,5 +10,4 @@ class BillingCycleDTO(BaseModel):
     public_id: str
     status: BillingCycleStatus
     started_at: datetime
-    processed_at: datetime | None = None
     closed_at: datetime | None = None
