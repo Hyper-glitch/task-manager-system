@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    project: str = "task-service"
+    project: str = "billing-service"
     api_host: str
     api_port: int
     database_dsn: str
