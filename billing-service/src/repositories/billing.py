@@ -44,6 +44,12 @@ class BillingCycleRepository:
         if cycles:
             return cycles[0]
 
+    def close(self, cycle: BillingCycle) -> BillingCycle:
+        cycle.status = BillingCycleStatus.CLOSED
+        cycle.closed_at = datetime.utcnow()
+        self._session.commit()
+        return cycle
+
     def create_active(self) -> BillingCycle:
         cycle = BillingCycle()
         self._session.add(cycle)
