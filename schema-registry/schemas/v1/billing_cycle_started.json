@@ -24,7 +24,7 @@
             "$ref": "#/definitions/BillingCycleDataSchema"
         },
         "producer": {
-            "default": "BILLING",
+            "default": "BILLING_SERVICE",
             "allOf": [
                 {
                     "$ref": "#/definitions/BillingProducer"
@@ -89,7 +89,7 @@
             "title": "BillingProducer",
             "description": "An enumeration.",
             "enum": [
-                "BILLING"
+                "BILLING_SERVICE"
             ]
         }
     }
