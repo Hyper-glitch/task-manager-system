@@ -1,4 +1,3 @@
-
 from src.kafka.consumer import EventsConsumer
 from src.services import user_event_service
 
