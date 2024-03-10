@@ -33,10 +33,10 @@ class BillingCycleService:
         started_cycle_event_dto = BillingCycleStartedEventSchema.from_orm(active_cycle)
 
         self.producer.send(
-            value=closed_cycle_event_dto.model_dump(mode="json"),
+            value=closed_cycle_event_dto.model_dump_json(),
             topic="billings",
         )
         self.producer.send(
-            value=started_cycle_event_dto.model_dump(mode="json"),
+            value=started_cycle_event_dto.model_dump_json(),
             topic="billings",
         )
