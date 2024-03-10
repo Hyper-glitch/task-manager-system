@@ -11,17 +11,19 @@ from src.services.exceptions import NoActiveCycleError
 
 class BillingCycleRepository:
     def __init__(
-            self,
-            session: Session,
+        self,
+        session: Session,
     ):
         self._session = session
 
     def get_by_id(self, billing_cycle_id: int) -> BillingCycle | None:
-        return self._session.query(BillingCycle).filter(BillingCycle.id == billing_cycle_id).first()
+        return (
+            self._session.query(BillingCycle)
+            .filter(BillingCycle.id == billing_cycle_id)
+            .first()
+        )
 
-    def get_last(
-        self, lock: bool = False, **lock_params: Any
-    ) -> BillingCycle | None:
+    def get_last(self, lock: bool = False, **lock_params: Any) -> BillingCycle | None:
         query = self._session.query(BillingCycle)
         if lock:
             query = query.with_for_update(**lock_params)
@@ -38,9 +40,7 @@ class BillingCycleRepository:
         if lock:
             query = query.with_for_update(**lock_params)
 
-        cycles = query.filter(
-            BillingCycle.status == BillingCycleStatus.CLOSED
-        ).all()
+        cycles = query.filter(BillingCycle.status == BillingCycleStatus.CLOSED).all()
         if cycles:
             return cycles[0]
 
@@ -68,7 +68,13 @@ class BillingCycleRepository:
         limit: int,
         offset: int,
     ) -> list[BillingCycle]:
-        return self._session.query(BillingCycle).order_by(desc(BillingCycle.id)).offset(offset).limit(limit).all()
+        return (
+            self._session.query(BillingCycle)
+            .order_by(desc(BillingCycle.id))
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
 
     def count_all(self) -> int:
         return self._session.query(BillingCycle).count()

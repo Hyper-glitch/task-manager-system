@@ -5,8 +5,8 @@ from src.models.account import Account
 
 class AccountRepository:
     def __init__(
-            self,
-            session: Session,
+        self,
+        session: Session,
     ):
         self._session = session
 
@@ -23,7 +23,9 @@ class AccountRepository:
         if user_id is not None:
             query = query.filter(Account.user_id == user_id)
 
-        return query.order_by(Account.billing_cycle_id).limit(limit).offset(offset).all()
+        return (
+            query.order_by(Account.billing_cycle_id).limit(limit).offset(offset).all()
+        )
 
     def get_acc_balance(
         self,

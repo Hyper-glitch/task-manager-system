@@ -1,6 +1,12 @@
 from src.dto.billing import BillingCycleDTO
 from src.repositories.billing import BillingCycleRepository
 from src.services.exceptions import BillingCycleNotFound
+from schema_registry.models.v1.billing_cycle_closed_event import (
+    BillingCycleClosedEventSchema,
+)
+from schema_registry.models.v1.billing_cycle_started_event import (
+    BillingCycleStartedEventSchema,
+)
 
 
 class BillingCycleService:
@@ -24,5 +30,11 @@ class BillingCycleService:
         closed_cycle_event_dto = BillingCycleClosedEventSchema.from_orm(closed_cycle)
         started_cycle_event_dto = BillingCycleStartedEventSchema.from_orm(active_cycle)
 
-        self.broker.send(closed_cycle_event_dto, f"{closed_cycle_event_dto.title}.{closed_cycle_event_dto.version}")
-        self.broker.send(started_cycle_event_dto, f"{started_cycle_event_dto.title}.{started_cycle_event_dto.version}")
+        self.broker.send(
+            closed_cycle_event_dto,
+            f"{closed_cycle_event_dto.title}.{closed_cycle_event_dto.version}",
+        )
+        self.broker.send(
+            started_cycle_event_dto,
+            f"{started_cycle_event_dto.title}.{started_cycle_event_dto.version}",
+        )
