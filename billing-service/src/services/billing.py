@@ -1,6 +1,3 @@
-from src.dto.billing import BillingCycleDTO
-from src.repositories.billing import BillingCycleRepository
-from src.services.exceptions import BillingCycleNotFound
 from schema_registry.models.v1.billing_cycle_closed_event import (
     BillingCycleClosedEventSchema,
 )
@@ -8,11 +5,16 @@ from schema_registry.models.v1.billing_cycle_started_event import (
     BillingCycleStartedEventSchema,
 )
 
+from src.dto.billing import BillingCycleDTO
+from src.kafka.producer import EventsProducer
+from src.repositories.billing import BillingCycleRepository
+from src.services.exceptions import BillingCycleNotFound
+
 
 class BillingCycleService:
-    def __init__(self, billing_repo: BillingCycleRepository, broker):
+    def __init__(self, billing_repo: BillingCycleRepository, producer: EventsProducer):
         self.billing_repo = billing_repo
-        self.broker = broker
+        self.producer = producer
 
     def get_billing_cycle(self, billing_cycle_id: int) -> BillingCycleDTO:
         billing = self.billing_repo.get_by_id(billing_cycle_id=billing_cycle_id)
@@ -30,11 +32,11 @@ class BillingCycleService:
         closed_cycle_event_dto = BillingCycleClosedEventSchema.from_orm(closed_cycle)
         started_cycle_event_dto = BillingCycleStartedEventSchema.from_orm(active_cycle)
 
-        self.broker.send(
-            closed_cycle_event_dto,
-            f"{closed_cycle_event_dto.title}.{closed_cycle_event_dto.version}",
+        self.producer.send(
+            value=closed_cycle_event_dto.model_dump(mode="json"),
+            topic="billings",
         )
-        self.broker.send(
-            started_cycle_event_dto,
-            f"{started_cycle_event_dto.title}.{started_cycle_event_dto.version}",
+        self.producer.send(
+            value=started_cycle_event_dto.model_dump(mode="json"),
+            topic="billings",
         )
