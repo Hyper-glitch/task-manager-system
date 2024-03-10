@@ -48,8 +48,7 @@
             "description": "An enumeration.",
             "enum": [
                 "ACTIVE",
-                "CLOSED",
-                "PROCESSED"
+                "CLOSED"
             ]
         },
         "BillingCycleDataSchema": {
@@ -70,11 +69,6 @@
                 },
                 "closed_at": {
                     "title": "Closed At",
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "processed_at": {
-                    "title": "Processed At",
                     "type": "string",
                     "format": "date-time"
                 }
