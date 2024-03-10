@@ -3,7 +3,7 @@
     "type": "object",
     "properties": {
         "title": {
-            "default": "TASK.CREATED",
+            "default": "TASK.UPDATED",
             "allOf": [
                 {
                     "$ref": "#/definitions/EventTitleTaskCreated"
@@ -30,7 +30,7 @@
             "title": "EventTitleTaskCreated",
             "description": "An enumeration.",
             "enum": [
-                "TASK.CREATED"
+                "TASK.UPDATED"
             ]
         },
         "TaskStatus": {
