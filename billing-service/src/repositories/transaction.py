@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from src.models.transaction import Transaction
 
 
-class TransactionRepo:
+class TransactionRepository:
     def __init__(
         self,
         session: Session,
