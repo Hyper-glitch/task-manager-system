@@ -8,6 +8,7 @@ from src.database import db
 from src.enums.transaction import TransactionTypes
 from src.models.base import Base
 from src.models.billing_cycle import BillingCycle
+from src.models.user import User
 
 
 class Transaction(Base):

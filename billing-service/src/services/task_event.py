@@ -8,7 +8,9 @@ from schema_registry.models.v1.task_assigned_event import TaskAssignedEventSchem
 from schema_registry.models.v1.task_completed_event import TaskCompletedEventSchema
 from schema_registry.models.v1.task_cost_added_event import TaskCostAddedDataSchema
 from schema_registry.models.v1.task_cost_added_event import TaskCostAddedEventSchema
-from schema_registry.models.v1.transaction_added_event import TransactionAddedEventSchema
+from schema_registry.models.v1.transaction_added_event import (
+    TransactionAddedEventSchema,
+)
 from schema_registry.models.v2.task_created_event import TaskCreatedEventSchema
 
 from src.config import settings
@@ -35,13 +37,13 @@ class TaskEventService:
     }
 
     def __init__(
-            self,
-            billing_cycle_repo: BillingCycleRepository,
-            task_repo: TaskRepository,
-            user_repo: UserRepository,
-            task_cost_repo: TaskCostRepository,
-            transaction_repo: TransactionRepository,
-            producer: EventsProducer,
+        self,
+        billing_cycle_repo: BillingCycleRepository,
+        task_repo: TaskRepository,
+        user_repo: UserRepository,
+        task_cost_repo: TaskCostRepository,
+        transaction_repo: TransactionRepository,
+        producer: EventsProducer,
     ):
         self.billing_cycle_repo = billing_cycle_repo
         self.task_repo = task_repo
@@ -67,7 +69,9 @@ class TaskEventService:
                 debit_cost=task_cost.debit_cost,
                 credit_cost=task_cost.credit_cost,
             )
-            self.producer.send(value=task_cost_event.model_dump_json(), topic="tasks-cost")
+            self.producer.send(
+                value=task_cost_event.model_dump_json(), topic="tasks-cost"
+            )
 
     @_process_event.register
     def assign_task(self, event: TaskAssignedEventSchema) -> None:
@@ -106,13 +110,17 @@ class TaskEventService:
                 data=data,
                 produced_at=datetime.utcnow(),
             )
-            self.producer.send(value=task_cost_event.model_dump_json(), topic="tasks-cost")
+            self.producer.send(
+                value=task_cost_event.model_dump_json(), topic="tasks-cost"
+            )
 
         transaction_event = TransactionAddedEventSchema(
             data=transaction_dto,
             produced_at=datetime.utcnow(),
         )
-        self.producer.send(value=transaction_event.model_dump_json(), topic="transactions")
+        self.producer.send(
+            value=transaction_event.model_dump_json(), topic="transactions"
+        )
 
     @_process_event.register
     def complete_task(self, event: TaskCompletedEventSchema) -> None:
@@ -121,7 +129,9 @@ class TaskEventService:
         with db.session.begin():
             billing_cycle = self.billing_cycle_repo.get_last(lock=True)
             task = self.task_repo.get_or_create(public_id=event.data.public_id)
-            user = self.user_repo.create_or_update(public_id=event.data.assignee_public_id)
+            user = self.user_repo.create_or_update(
+                public_id=event.data.assignee_public_id
+            )
 
             task_cost = self.task_cost_repo.get_by_task_id(task.id)
             if not task_cost:
@@ -148,13 +158,17 @@ class TaskEventService:
                 data=data,
                 produced_at=datetime.utcnow(),
             )
-            self.producer.send(value=task_cost_event.model_dump_json(), topic="tasks-cost")
+            self.producer.send(
+                value=task_cost_event.model_dump_json(), topic="tasks-cost"
+            )
 
         transaction_event = TransactionAddedEventSchema(
             data=transaction_dto,
             produced_at=datetime.utcnow(),
         )
-        self.producer.send(value=transaction_event.model_dump_json(), topic="transactions")
+        self.producer.send(
+            value=transaction_event.model_dump_json(), topic="transactions"
+        )
 
     @classmethod
     def process_task_event_message(cls, message: bytes) -> None:

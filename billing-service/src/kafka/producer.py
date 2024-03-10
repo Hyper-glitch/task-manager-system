@@ -20,11 +20,7 @@ class EventsProducer:
         try:
             self.producer.produce(topic=topic, value=value)
         except Exception as exc:
-            logger.error(
-                f"Cannot send payload to `{topic}` kafka topic. Reason: {exc}"
-            )
+            logger.error(f"Cannot send payload to `{topic}` kafka topic. Reason: {exc}")
         else:
-            logger.info(
-                f"Publishing to topic {topic}, message {value}"
-            )
+            logger.info(f"Publishing to topic {topic}, message {value}")
             self.producer.flush()
