@@ -1,5 +1,9 @@
 import logging
 
+from schema_registry.models.v1.task_assigned_event import TaskAssignedEventSchema
+from schema_registry.models.v1.task_completed_event import TaskCompletedEventSchema
+from schema_registry.models.v1.task_created_event import TaskCreatedEventSchema
+
 from src.config import settings
 from src.database import db
 from src.dto.task import TaskDTO
@@ -17,13 +21,13 @@ logger = logging.getLogger(settings.project)
 
 class TaskEventService:
     def __init__(
-        self,
-        billing_cycle_repo: BillingCycleRepository,
-        task_repo: TaskRepository,
-        user_repo: UserRepository,
-        task_cost_repo: TaskCostRepository,
-        transaction_repo,
-        broker,
+            self,
+            billing_cycle_repo: BillingCycleRepository,
+            task_repo: TaskRepository,
+            user_repo: UserRepository,
+            task_cost_repo: TaskCostRepository,
+            transaction_repo,
+            broker,
     ):
         self.billing_cycle_repo = billing_cycle_repo
         self.task_repo = task_repo
@@ -78,7 +82,7 @@ class TaskEventService:
         with db.session.begin():
             billing_cycle = self.billing_cycle_repo.get_last(lock=True)
             task = self.task_repo.get_or_create(public_id=event.data.public_id)
-            user = self.user_repo.get_or_create(public_id=event.data.assignee_public_id)
+            user = self.user_repo.create_or_update(public_id=event.data.assignee_public_id)
 
             task_cost = self.task_cost_repo.get_by_task_id(task.id)
             if not task_cost:
