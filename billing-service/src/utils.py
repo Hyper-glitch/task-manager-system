@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Any, Type
 
 from flask import Response, jsonify
+from pydantic import BaseModel
 
 
 def make_response(code: int, **data) -> Response:
@@ -11,3 +12,17 @@ def make_response(code: int, **data) -> Response:
     if data:
         response["data"] = data
     return jsonify(response)
+
+
+def event_data_fabric(
+    data: dict[str, Any],
+    event_map: dict[tuple[str, int], Type[BaseModel]],
+) -> BaseModel:
+    title = data.get("title")
+    version = data.get("version")
+    schema = event_map.get((title, version))
+
+    if not schema:
+        raise ValueError(f"Unknown event: {data}")
+
+    return schema(**data)
