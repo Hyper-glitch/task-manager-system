@@ -7,8 +7,8 @@ from src.models.transaction import Transaction
 
 class TransactionRepo:
     def __init__(
-            self,
-            session: Session,
+        self,
+        session: Session,
     ):
         self._session = session
 

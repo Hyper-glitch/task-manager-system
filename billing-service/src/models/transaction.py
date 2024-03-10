@@ -16,17 +16,23 @@ class Transaction(Base):
     id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(UUID(as_uuid=True), nullable=False, default=uuid.uuid4)
     user_id = db.Column("user_id", db.Integer, db.ForeignKey(User.id))
-    billing_cycle_id = db.Column("billing_cycle_id", db.Integer, db.ForeignKey(BillingCycle.id))
-    debit = db.Column("debit", db.Integer, nullable=False, default=0, server_default=db.text("0"))
-    credit = db.Column("credit", db.Integer, nullable=False, default=0, server_default=db.text("0"))
+    billing_cycle_id = db.Column(
+        "billing_cycle_id", db.Integer, db.ForeignKey(BillingCycle.id)
+    )
+    debit = db.Column(
+        "debit", db.Integer, nullable=False, default=0, server_default=db.text("0")
+    )
+    credit = db.Column(
+        "credit", db.Integer, nullable=False, default=0, server_default=db.text("0")
+    )
     task_id = db.Column("task_id", db.Integer)
     type = db.Column(
-            "type",
-            Enum(TransactionTypes),
-            nullable=False,
-            default=TransactionTypes.INCOME,
-            server_default=db.text(f"'{TransactionTypes.INCOME.value}'"),
-        )
+        "type",
+        Enum(TransactionTypes),
+        nullable=False,
+        default=TransactionTypes.INCOME,
+        server_default=db.text(f"'{TransactionTypes.INCOME.value}'"),
+    )
     created_at = db.Column(
         "created_at",
         DateTime,

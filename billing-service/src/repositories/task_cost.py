@@ -10,8 +10,8 @@ from src.models.task import TaskCost
 
 class TaskCostRepository:
     def __init__(
-            self,
-            session: Session,
+        self,
+        session: Session,
     ):
         self._session = session
 

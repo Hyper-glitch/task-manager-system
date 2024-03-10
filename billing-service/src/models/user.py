@@ -18,6 +18,10 @@ class User(Base):
         default=UserRoles.EMPLOYEE,
         server_default=db.text(f"'{UserRoles.EMPLOYEE.value}'"),
     )
-    username = db.Column(db.String(128), nullable=False, default="", server_default=db.text("''"))
-    email = db.Column(db.String(128), nullable=False, default="", server_default=db.text("''"))
+    username = db.Column(
+        db.String(128), nullable=False, default="", server_default=db.text("''")
+    )
+    email = db.Column(
+        db.String(128), nullable=False, default="", server_default=db.text("''")
+    )
     is_deleted = db.Column(db.Boolean)
