@@ -1,5 +1,6 @@
 from typing import Any
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from src.models.transaction import Transaction
@@ -27,3 +28,21 @@ class TransactionRepository:
         self._session.add(transaction)
         self._session.commit()
         return transaction
+
+    def get_balance_by_cycle(
+        self, user_id: int, billing_cycle_id: int
+    ) -> tuple[int, int]:
+        result = (
+            self._session.query(
+                func.sum(Transaction.debit).label("debit"),
+                func.sum(Transaction.credit).label("credit"),
+            )
+            .filter(
+                Transaction.billing_cycle_id == billing_cycle_id,
+                Transaction.user_id == user_id,
+            )
+            .all()
+        )
+        if result:
+            return result[0]["debit"], result[0]["credit"]
+        return 0, 0
