@@ -18,11 +18,7 @@ def event_data_fabric(
     data: dict[str, Any],
     event_map: dict[tuple[str, int], Type[BaseModel]],
 ) -> BaseModel:
-    title = data.get("title")
-    version = data.get("version")
-    schema = event_map.get((title, version))
-
+    schema = event_map.get((data.get("title"), data.get("version")))
     if not schema:
         raise ValueError(f"Unknown event: {data}")
-
     return schema(**data)
