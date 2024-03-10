@@ -8,8 +8,9 @@ from src.repositories.transaction import TransactionRepository
 from src.repositories.user import UserRepository
 from src.services.account import AccountService
 from src.services.billing import BillingCycleService
+from src.services.payment import PaymentService
 from src.services.task_event import TaskEventService
-from src.services.user_events_service import UserEventService
+from src.services.user_events import UserEventService
 
 producer = EventsProducer()
 
@@ -33,5 +34,10 @@ task_event_service = TaskEventService(
     user_repo=user_repo,
     task_cost_repo=task_cost_repo,
     transaction_repo=transaction_repo,
+    producer=producer,
+)
+payment_service = PaymentService(
+    transaction_repo=transaction_repo,
+    billing_repo=billing_repo,
     producer=producer,
 )
