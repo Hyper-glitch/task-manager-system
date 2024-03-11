@@ -11,3 +11,6 @@ class BillingCycleDTO(BaseModel):
     status: BillingCycleStatus
     started_at: datetime
     closed_at: datetime | None = None
+
+    class Config:
+        orm_mode = True
