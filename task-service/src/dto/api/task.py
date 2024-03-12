@@ -16,3 +16,6 @@ class TaskDTO(BaseModel):
     updated_at: datetime
     assignee_id: int
     assignee: UserDTO | None
+
+    class Config:
+        from_attributes = True
