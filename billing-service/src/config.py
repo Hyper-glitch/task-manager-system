@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     token_algorithm: str = "RS256"
 
     class Config:
-        env_file = "../.env"
+        env_file = ".env"
 
     @property
     def bootstrap_servers(self) -> str:
