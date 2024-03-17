@@ -1,5 +1,7 @@
 import uuid
+from datetime import datetime
 
+from sqlalchemy import DateTime
 from sqlalchemy.dialects.postgresql import UUID
 
 from src.database import db
@@ -20,3 +22,10 @@ class TaskCost(Base):
     )
     credit_cost = db.Column("credit_cost", db.Integer, nullable=False)
     debit_cost = db.Column("debit_cost", db.Integer, nullable=False)
+    created_at = db.Column(
+        "created_at",
+        DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        server_default=db.text("(now() at time zone 'utc')"),
+    )
