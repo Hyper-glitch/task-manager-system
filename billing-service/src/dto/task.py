@@ -25,4 +25,5 @@ class TaskDTO(BaseModel):
             "description": self.description,
             "credit_cost": randint(20, 40),
             "debit_cost": randint(20, 40),
+            "created_at": self.created_at,
         }
