@@ -31,6 +31,4 @@ class TaskCostService:
             .filter(TaskCost.created_at.between(start_day, end_day))
             .first()
         )
-        return {
-            "most_expensive_task": expensive_task
-        }
+        return {"most_expensive_task": expensive_task}

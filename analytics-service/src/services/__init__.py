@@ -1,5 +1,5 @@
-from src.services.balance import BalanceService
 from src.database import db
+from src.services.balance import BalanceService
 from src.services.task_cost import TaskCostService
 
 balance_service = BalanceService(db.session)
