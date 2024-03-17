@@ -12,34 +12,29 @@ class BalanceService:
     ):
         self._session = session
 
-    def get_today_manager_balance(self, user_public_id: int, public_id: int):
+    def get_today_manager_balance(self):
         start_day = datetime.combine(date.today(), datetime.min.time())
         end_day = datetime.combine(date.today(), datetime.max.time())
         transactions = (
             self._session.query(Transaction)
-            .filter(
-                Transaction.user.public_id == user_public_id,
-                Transaction.public_id == public_id,
-            )
             .filter(Transaction.created_at.between(start_day, end_day))
             .all()
         )
         return {
-            "manager_balance": sum(
+            "managers_income": sum(
                 transaction.debit - transaction.credit for transaction in transactions
             )
         }
 
-    def get_worker_statuses(self, user_public_id: int):
+    def get_worker_statuses(self):
         start_day = datetime.combine(date.today(), datetime.min.time())
         end_day = datetime.combine(date.today(), datetime.max.time())
         transactions = (
-            self._session
-            .query(
+            self._session.query(
+                Transaction.user.public_id,
                 func.sum(Transaction.debit),
                 func.sum(Transaction.credit),
             )
-            .filter(Transaction.user.public_id == user_public_id)
             .filter(Transaction.created_at.between(start_day, end_day))
             .group_by(Transaction.user.public_id)
             .all()
