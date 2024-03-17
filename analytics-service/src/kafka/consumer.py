@@ -8,7 +8,7 @@ logger = logging.getLogger(settings.project)
 
 
 class EventsConsumer:
-    def __init__(self, topic: str) -> None:
+    def __init__(self, topic: str, callback) -> None:
         self.consumer = Consumer(
             {
                 "bootstrap.servers": settings.bootstrap_servers,
@@ -17,6 +17,7 @@ class EventsConsumer:
             }
         )
         self.consumer.subscribe([topic])
+        self.consumer.subscribe(callback)
 
     def process_message(self) -> None:
         try:
