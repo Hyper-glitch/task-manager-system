@@ -19,3 +19,6 @@ class TransactionDTO(BaseModel):
     created_at: datetime
     task: TaskDTO | None = None
     task_id: int | None = None
+
+    class Config:
+        orm_mode = True

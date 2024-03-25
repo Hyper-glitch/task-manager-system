@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    project: str = "billing-service"
+    project: str = "analytics-service"
     api_host: str
     api_port: int
     database_dsn: str
@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     token_algorithm: str = "RS256"
 
     class Config:
-        env_file = ".env"
+        env_file = "../.env"
 
     @property
     def bootstrap_servers(self) -> str:

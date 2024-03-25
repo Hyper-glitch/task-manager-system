@@ -6,7 +6,7 @@ from src.dto.api.task import TaskDTO
 from src.dto.events.task import TaskCreatedEventDTO, TaskEventDTO, TaskNewAssigneeDTO, \
     TaskCompletedEventDTO, TaskStatusChangedDataDTO, TaskAssignedEventDTO
 from src.enums.status import TaskStatus
-from src.kafka.broker import broker
+from src.kafka.producer import EventsProducer
 from src.models.task import Task
 from src.repositories.task import TaskRepository
 from src.repositories.user import UserRepository
@@ -14,9 +14,15 @@ from src.services.exceptions import TaskNotFound, WrongTaskStatus
 
 
 class TaskService:
-    def __init__(self, task_repo: TaskRepository, user_repo: UserRepository):
+    def __init__(
+            self,
+            task_repo: TaskRepository,
+            user_repo: UserRepository,
+            producer: EventsProducer,
+    ):
         self.task_repo = task_repo
         self.user_repo = user_repo
+        self.producer = producer
 
     def get_task(self, task_id: int) -> TaskDTO:
         task = self.task_repo.get_by_id(task_id)
@@ -37,7 +43,7 @@ class TaskService:
             data=TaskEventDTO.from_orm(task),
             produced_at=datetime.utcnow(),
         )
-        broker.publish(message=data_event.model_dump(mode="json"), topic=settings.data_streaming_topic)
+        self.producer.send(value=data_event.model_dump_json(), topic=settings.data_streaming_topic)
 
         business_event = TaskAssignedEventDTO(
             data=TaskNewAssigneeDTO(
@@ -47,7 +53,7 @@ class TaskService:
             ),
             produced_at=datetime.utcnow(),
         )
-        broker.publish(message=business_event.model_dump(mode="json"), topic=settings.business_event_topic)
+        self.producer.send(value=business_event.model_dump_json(), topic=settings.business_event_topic)
         return TaskDTO.from_orm(task)
 
     def complete_task(self, task_id: int) -> TaskDTO:

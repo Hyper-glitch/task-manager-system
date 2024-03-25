@@ -7,7 +7,7 @@ __pycache__
 .DS_Store
 
 # enviroment
-src/.env
+.env
 /.venv
 /venv
 /env
